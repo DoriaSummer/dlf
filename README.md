@@ -1,5 +1,7 @@
 My study of Deep Learning Fundamentals
+
 Wuli Zuo
+
 a1785343
 
 # Assignment 1 Predict diabetes via Perceptron
@@ -10,5 +12,7 @@ To implement, describe, and test a specific algorithm called Perceptron (which c
 
 ## Data
 
-The original data: https://www.kaggle.com/ uciml/pima-indians-diabetes-database 
-The pre-processed data: https://www.csie.ntu.edu.tw/ ̃cjlin/ libsvmtools/datasets/binary.html
+The original data: https://www.kaggle.com/uciml/pima-indians-diabetes-database
+
+The pre-processed data: https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html
+
