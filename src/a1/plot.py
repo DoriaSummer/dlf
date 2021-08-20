@@ -14,8 +14,8 @@ def plot_acc(acc1, acc2, acc_index_list, class1, class2, algo_name, learning_rat
     y1 = acc1
     y2 = acc2
 
-    plt.plot(acc_index_list, y1, color='b', label='%s loss' % class1)
-    plt.plot(acc_index_list, y2, color='r', label='%s loss' % class2)
+    plt.plot(acc_index_list, y1, color='b', label='%s accuracy' % class1)
+    plt.plot(acc_index_list, y2, color='r', label='%s accuracy' % class2)
     plt.legend(loc='lower left')
 
     plt.savefig('../../output/accuracy_%.4f.png' % learning_rate)
