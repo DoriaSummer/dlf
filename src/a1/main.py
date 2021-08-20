@@ -4,7 +4,6 @@
 
 import numpy as np
 import perceptron
-import plot
 import nn
 import svm
 from sklearn.datasets import load_svmlight_file
@@ -17,11 +16,12 @@ def load_data_set(filepath):
     data = np.array(data.todense())
     data_train, data_test, label_train, label_test = train_test_split(data, label, test_size=0.4,
                                                                       random_state=1, stratify=label)
-
+    '''
     print(data_train.shape)
     print(data_test.shape)
     print(label_train.shape)
     print(label_test.shape)
+    '''
 
     return data_train, data_test, label_train, label_test
 
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     best_model = 0
     for learning_rate in [0.1, 0.01, 0.001, 0.0001]:
         print('\n## learning rate = ', learning_rate)
-        model = perceptron.train(data_train, label_train, data_test, label_test, 0.1, 1000)
+        model = perceptron.train(data_train, label_train, data_test, label_test, learning_rate, 1000)
         acc_train = perceptron.getAccuracy(data_train, label_train, model)
         acc_test = perceptron.getAccuracy(data_test, label_test, model)
         if acc_test > best_acc_test:
