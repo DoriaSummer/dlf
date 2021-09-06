@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     print('\n* Best result:  ')
     print('## learning rate = %f, training accuracy = %f, test accuracy = %f'
-          % (best_lr, acc_train, acc_test))
+          % (best_lr, best_acc_train, best_acc_test))
 
     # sklearn implementation for comparison
     # train & predict with sklearn
