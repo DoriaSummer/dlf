@@ -42,16 +42,16 @@ def LeNet5(activation, optimizer, learning_rate, filters, dense, mode):
 
 # function to train a LeNet-5 network
 def train(data_train, label_train, data_validate, label_validate, data_test, label_test, mode):
-    # tuned best params
-    activation = 'elu'
+    # original params
+    activation = 'relu'
     optimizer = keras.optimizers.Adam
     learning_rate = 0.001
-    filters = 3
-    dense = 2
-    if mode == 0: # original form params
-        activation = 'relu'
-        filters = 1
-        dense = 1
+    filters = 1
+    dense = 1
+    if mode == 2: # best params
+        activation = 'elu'
+        filters = 2
+        dense = 3
     model = LeNet5(activation, optimizer, learning_rate, filters, dense, mode)
     early_stopping_cb = keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=5, restore_best_weights=True)
     lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=0.5, patience=5)

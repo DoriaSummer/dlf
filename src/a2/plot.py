@@ -20,6 +20,20 @@ def plot_history(history):
     plt.show()
 
 
+def plot_history_resN(history):
+    # Plot the results (shifting validation curves appropriately)
+    plt.figure(figsize=(8, 4))
+    plt.title('Training and validation accuracy & loss')
+    plt.xlabel('Epoch')
+    x = np.arange(len(history.history['acc']))
+    plt.plot(x, history.history['acc'], color='r')
+    plt.plot(x, history.history['loss'], color='g')
+    plt.plot(x, history.history['val_acc'], color='b')
+    plt.plot(x, history.history['val_loss'], color='orange')
+    plt.legend(['Training accuracy', 'Training loss', 'Validation accuracy', 'Validation loss'])
+    plt.show()
+
+
 # function to plot learning rate
 def plot_lr(history):
     plt.figure(figsize=(8, 4))

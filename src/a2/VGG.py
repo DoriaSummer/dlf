@@ -31,12 +31,13 @@ def VGG():
     '''
 
     model.add(Flatten())
+    '''
     model.add(Dense(4096, activation='relu'))
     model.add(Dense(4096, activation='relu'))
     '''
     model.add(Dense(512, activation='relu'))
     model.add(Dense(512, activation='relu'))
-    '''
+
     model.add(Dense(10, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])

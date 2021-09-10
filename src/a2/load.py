@@ -5,8 +5,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
-import torchvision
 import ssl
+import torchvision
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 
@@ -46,7 +46,7 @@ def load(path):
     file4 = unpack(path + "cifar-10-batches-py/data_batch_4")
     file5 = unpack(path + "cifar-10-batches-py/data_batch_5")
 
-    # data processing: normalization, label encoding and separating
+    # data processing: normalization, one-hot encoding and separating
 
     data_train_all = np.r_[file1[b'data'], file2[b'data'], file3[b'data'], file4[b'data'], file5[b'data']]
     label_train_all = np.r_[file1[b'labels'], file2[b'labels'], file3[b'labels'], file4[b'labels'], file5[b'labels']]
@@ -68,10 +68,10 @@ def load(path):
     data_test = np.transpose(data_test.reshape(-1, 3, 32, 32), (0, 2, 3, 1))
     data_train_all = data_train_all / 255
     data_test = data_test / 255
-    # label encoding
+    # one-hot encoding for the label
     label_train_encode = to_categorical(label_train_all, 10)
     label_test_encode = to_categorical(label_test, 10)
-    print("## Encoded label sample", label_train_encode[0])
+    print("## One-hot label sample", label_train_encode[0])
     # separate: training set & validation set
     data_train, data_validate, label_train, label_validate = train_test_split(data_train_all, label_train_encode, train_size=0.7,
                                                                     random_state=1, stratify=label_train_encode)
