@@ -21,8 +21,19 @@ The pre-processed data: https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/
 ## Task
 
 To implement, describe, and test Convolutional Neural Networks (CNNs) to classify images using CIFAR-10 dataset.
+
 ## Data
 
 The well known CIFAR-10 dataset: https://www.cs.toronto.edu/~kriz/cifar.html
 
 The data in this assignment is obtained by using pytorch built-in function torchvision.datasets.CIFAR10.
+
+# Assignment 3: Assignment 3: Recurrent Neural Networks for Stock Price Prediction
+
+## Task
+
+To implement, describe, and test Recurrent Neural Networks (RNNs) to predict stock prices in the future, using Google Stock Price dataset on Kaggle.
+
+## Data
+
+Google Stock Price dataset: https://www.kaggle.com/rahulsah06/gooogle-stock-price
