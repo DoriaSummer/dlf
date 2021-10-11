@@ -28,7 +28,7 @@ The well known CIFAR-10 dataset: https://www.cs.toronto.edu/~kriz/cifar.html
 
 The data in this assignment is obtained by using pytorch built-in function torchvision.datasets.CIFAR10.
 
-# Assignment 3: Assignment 3: Recurrent Neural Networks for Stock Price Prediction
+# Assignment 3: Recurrent Neural Networks for Stock Price Prediction
 
 ## Task
 

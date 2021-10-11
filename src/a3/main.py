@@ -82,8 +82,8 @@ def main(title, signal, repeat, epochs, look_backs, batch_sizes, neuron_nums):
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-repeats = 2
-epochs = 2
+repeats = 10
+epochs = 100
 
 print('\n# 1.1 tune look_back')
 look_backs = [1, 2, 3]
