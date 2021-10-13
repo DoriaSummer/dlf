@@ -9,14 +9,15 @@ import numpy as np
 import os
 import pandas as pd
 import plot
+import tensorflow as tf
 import time
 
 
-def main(title, signal, repeat, epochs, look_backs, batch_sizes, neuron_nums):
+def main(title, signal, repeat, epochs, look_backs, batch_sizes, neuron_nums, flag):
     # load and process data
-    dataset = load.init_dataset('../../data/a3/Google_Stock_Price_Train.csv')
-    scaler, dataset = load.preprocessing(dataset)
-    train, valid = load.separate_data(dataset)
+    dataset_train = load.init_dataset('../../data/a3/Google_Stock_Price_Train.csv')
+    scaler, dataset_train = load.preprocessing(dataset_train)
+    train, valid = load.separate_data(dataset_train)
 
     # compare and select
     if signal != 0:
@@ -44,28 +45,26 @@ def main(title, signal, repeat, epochs, look_backs, batch_sizes, neuron_nums):
                         validX, validY = load.create_dataset(valid, look_back)
                         print(trainX.shape)
                         print(trainY.shape)
-                        trainPredict, validPredict, train_scores, valid_scores, history = lstm.train(scaler,
+                        trainPredict, validPredict, train_scores, valid_scores, history, model = lstm.train(scaler,
                                                                                                      trainX, trainY,
                                                                                                      validX, validY,
                                                                                                      epochs, look_back,
-                                                                                                     batch_size, neuron_num)
+                                                                                                     batch_size, neuron_num, flag)
                         train_scores_list_i.append(train_scores)
                         valid_scores_list_i.append(valid_scores)
             train_scores_list.append(train_scores_list_i)
             valid_scores_list.append(valid_scores_list_i)
-            print("## train_scores:")
-            print(np.array(train_scores_list))
-            print("## valid_scores:")
-            print(np.array(valid_scores_list))
+        print("## train_scores:")
+        print(np.array(train_scores_list))
+        print("## valid_scores:")
+        print(np.array(valid_scores_list))
 
         # plot
         train_scores_df = pd.DataFrame(train_scores_list, columns=search_list)
-        plt.figure(4, figsize=(9, 6))
         train_scores_df.boxplot(column=search_list)
         plt.title("Training RMSE with different %s" % param)
         plt.show()
         valid_scores_arr_df = pd.DataFrame(valid_scores_list, columns=search_list)
-        plt.figure(5, figsize=(9, 6))
         valid_scores_arr_df.boxplot(column=search_list)
         plt.title("Validation RMSE with different %s" % param)
         plt.show()
@@ -74,75 +73,100 @@ def main(title, signal, repeat, epochs, look_backs, batch_sizes, neuron_nums):
     else:
         trainX, trainY = load.create_dataset(train, look_backs[0])
         validX, validY = load.create_dataset(valid, look_backs[0])
-        trainPredict, validPredict, train_scores, valid_scores, history = lstm.train(scaler, trainX, trainY, validX,
+        trainPredict, validPredict, train_scores, valid_scores, history, model = lstm.train(scaler, trainX, trainY, validX,
                                                                                      validY, epochs, look_backs[0],
-                                                                                     batch_sizes[0], neuron_nums[0])
-        plot.plot_prediction(scaler, dataset, trainPredict, validPredict, look_backs[0], title)
+                                                                                     batch_sizes[0], neuron_nums[0], flag)
+        if flag < 2:
+            plot.plot_train_prediction(scaler, dataset_train, trainPredict, validPredict, look_backs[0], title)
+        else:  # test
+            dataset_test = load.init_dataset('../../data/a3/Google_Stock_Price_Test.csv')
+            test_scaler, test_dataset = load.preprocessing(dataset_test)
+            testX, testY = load.create_dataset(test_dataset, look_backs[0])
+            testPredict = model.predict(testX)
+            testPredict = lstm.repeat_inverse_trans(scaler, testPredict, 1)
+            mse = tf.keras.losses.MeanSquaredError()
+            test_score_mse = np.sqrt(mse(testY, testPredict).numpy())
+            print("## test score: ", test_score_mse)
+            plot.plot_test_prediction(scaler, test_dataset, testPredict, title)
 
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+np.random.seed(42)
 
 repeats = 10
 epochs = 100
 
-print('\n# 1.1 tune look_back')
+print('\n# 1.1 Tune look_back')
 look_backs = [1, 2, 3]
 batch_sizes = [1]
 neuron_nums = [8]
+
 start = time.time()
 # entry point
-main('title', 1, repeats, epochs, look_backs, batch_sizes, neuron_nums)
+main('title', 1, repeats, epochs, look_backs, batch_sizes, neuron_nums, 0)
 end = time.time()
 print('## Running time: %.4f s' % (end - start))
 
-print('\n# 1.2 best look_backs = 3')
-look_backs = [3]
+print('\n# 1.2 best look_backs = 1')
+look_backs = [1]
 start = time.time()
 # entry point
-title = "batch=" + str(batch_sizes[0]) + " look_back=" + str(look_backs[0]) + " neurons=" + str(neuron_nums[0])
-main(title, 0, repeats, epochs, look_backs, batch_sizes, neuron_nums)
+title = "Tune: look_back=" + str(look_backs[0]) + ", batch_size=" + str(batch_sizes[0]) + ", neurons=" + str(neuron_nums[0])
+main(title, 0, repeats, epochs, look_backs, batch_sizes, neuron_nums, 0)
 end = time.time()
 print('## Running time: %.4f s' % (end - start))
 
 
 print('\n# 2.1 tune batch_size')
-look_backs = [3]
+
 batch_sizes = [1, 2, 4, 8]
-neuron_nums = [8]
 start = time.time()
 # entry point
-main('title', 2, repeats, epochs, look_backs, batch_sizes, neuron_nums)
+main('title', 2, repeats, epochs, look_backs, batch_sizes, neuron_nums, 0)
 end = time.time()
 print('## Running time: %.4f s' % (end - start))
 
-print('\n# 2.2 best batch_size = 1')
-look_backs = [3]
-batch_sizes = [1]
-neuron_nums = [8]
+print('\n# 2.2 best batch_size = 8')
+batch_sizes = [8]
 start = time.time()
 # entry point
-title = "batch=" + str(batch_sizes[0]) + " look_back=" + str(look_backs[0]) + " neurons=" + str(neuron_nums[0])
-main(title, 0, repeats, epochs, look_backs, batch_sizes, neuron_nums)
+title = "Tune: look_back=" + str(look_backs[0]) + ", batch_size=" + str(batch_sizes[0]) + ", neurons=" + str(neuron_nums[0])
+main(title, 0, repeats, epochs, look_backs, batch_sizes, neuron_nums, 0)
 end = time.time()
 print('## Running time: %.4f s' % (end - start))
 
 print('\n# 3.1 tune neurons_num')
-look_backs = [3]
-batch_sizes = [1]
+
 neuron_nums = [1, 2, 4, 8]
 start = time.time()
 # entry point
-main('title', 3, repeats, epochs, look_backs, batch_sizes, neuron_nums)
+main('title', 3, repeats, epochs, look_backs, batch_sizes, neuron_nums, 0)
 end = time.time()
 print('## Running time: %.4f s' % (end - start))
 
 print('\n# 3.2 best neuron_num = 8')
-look_backs = [3]
-batch_sizes = [1]
 neuron_nums = [8]
 start = time.time()
 # entry point
-title = "batch=" + str(batch_sizes[0]) + " look_back=" + str(look_backs[0]) + " neurons=" + str(neuron_nums[0])
-main(title, 0, repeats, epochs, look_backs, batch_sizes, neuron_nums)
+title = "Tune: look_back=" + str(look_backs[0]) + ", batch_size=" + str(batch_sizes[0]) + ", neurons=" + str(neuron_nums[0])
+main(title, 0, repeats, epochs, look_backs, batch_sizes, neuron_nums, 0)
+end = time.time()
+print('## Running time: %.4f s' % (end - start))
+
+
+print('\n# 4 Bidirectional')
+start = time.time()
+# entry point
+title = "Bidirectional: look_back=" + str(look_backs[0]) + ", batch_size=" + str(batch_sizes[0]) + ", neurons=" + str(neuron_nums[0])
+main(title, 0, repeats, epochs, look_backs, batch_sizes, neuron_nums, 1)
+end = time.time()
+print('## Running time: %.4f s' % (end - start))
+
+
+print('\n# 5 Test')
+start = time.time()
+# entry point
+title = "Test: look_back=" + str(look_backs[0]) + ", batch_size=" + str(batch_sizes[0]) + ", neurons=" + str(neuron_nums[0])
+main(title, 0, repeats, epochs, look_backs, batch_sizes, neuron_nums, 2)
 end = time.time()
 print('## Running time: %.4f s' % (end - start))

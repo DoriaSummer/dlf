@@ -2,32 +2,26 @@
 # Date: 2021-09-30
 
 
-import math
 import numpy as np
 import tensorflow as tf
-from keras.models import Sequential
+from keras.layers import Bidirectional
 from keras.layers import Dense
 from keras.layers import LSTM
-from sklearn.metrics import mean_squared_error
+from keras.models import Sequential
 
 
-def lstm(trainX, trainY, validX, validY, epochs, look_back, batch_size, n_neurons):
+def lstm(trainX, trainY, validX, validY, epochs, look_back, batch_size, neurons_num, flag):
     callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
     model = Sequential()
-    model.add(LSTM(n_neurons, input_shape=(look_back, 5)))
+    if flag > 0:  # Bidirectional
+        model.add(Bidirectional(LSTM(neurons_num, input_shape=(look_back, 5))))
+    else:
+        model.add(LSTM(neurons_num, input_shape=(look_back, 5)))
     model.add(Dense(1))
     model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mse'])
-    history = model.fit(trainX, trainY, epochs=epochs, batch_size=batch_size, verbose=0, callbacks=[callback],
-                        validation_data=(validX, validY))
+    history = model.fit(trainX, trainY, epochs=epochs, batch_size=batch_size, verbose=0,
+                        callbacks=[callback], validation_data=(validX, validY))
     return model, history
-
-
-'''
-def cal_rmse(Y, predict, name):
-    score = math.sqrt(mean_squared_error(Y[:], predict[:]))
-    print(name, 'Score: %.2f RMSE' % (score))
-    return score
-'''
 
 
 def repeat_inverse_trans(scaler, Y, dim):
@@ -40,8 +34,8 @@ def repeat_inverse_trans(scaler, Y, dim):
     return Y
 
 
-def train(scaler, trainX_org, trainY_org, validX_org, validY_org, epochs, look_back, batch_size, neurons_num):
-    model, history = lstm(trainX_org, trainY_org, validX_org, validY_org, epochs, look_back, batch_size, neurons_num)
+def train(scaler, trainX_org, trainY_org, validX_org, validY_org, epochs, look_back, batch_size, neurons_num, flag):
+    model, history = lstm(trainX_org, trainY_org, validX_org, validY_org, epochs, look_back, batch_size, neurons_num, flag)
     # predict
     trainPredict = model.predict(trainX_org)
     validPredict = model.predict(validX_org)
@@ -55,4 +49,4 @@ def train(scaler, trainX_org, trainY_org, validX_org, validY_org, epochs, look_b
     valid_score_mse = np.sqrt(mse(validY, validPredict).numpy())
     print("### training score: ", train_score_mse)
     print("### validation score: ", valid_score_mse)
-    return trainPredict, validPredict, train_score_mse, valid_score_mse, history
+    return trainPredict, validPredict, train_score_mse, valid_score_mse, history, model

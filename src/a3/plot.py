@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy
 
 
-def plot_prediction(scaler, dataset, trainPredict, validPredict, look_back, title):
+def plot_train_prediction(scaler, dataset, trainPredict, validPredict, look_back, title):
     # shift training predictions for plotting
     trainPredictPlot = numpy.empty_like(dataset[:, 0])
     trainPredictPlot[:] = numpy.nan
@@ -16,10 +16,17 @@ def plot_prediction(scaler, dataset, trainPredict, validPredict, look_back, titl
     validPredictPlot[:] = numpy.nan
     validPredictPlot[len(trainPredict) + (look_back * 2) + 1:len(dataset) - 1] = validPredict
     # plot baseline and predictions
-    # plt.figure(1)
     plt.title(title)
-    plt.plot(scaler.inverse_transform(dataset)[:, 0], label='baseline')
-    plt.plot(trainPredictPlot, label='training predictions')
-    plt.plot(validPredictPlot, label='validation predictions')
+    plt.plot(scaler.inverse_transform(dataset)[:, 0], linewidth=1, label='baseline')
+    plt.plot(trainPredictPlot, linewidth=1, label='training predictions')
+    plt.plot(validPredictPlot, linewidth=1, label='validation predictions')
+    plt.legend()
+    plt.show()
+
+
+def plot_test_prediction(scaler, test_dataset, testPredict, title):
+    plt.title(title)
+    plt.plot(scaler.inverse_transform(test_dataset[:len(testPredict)])[:, 0], linewidth=1, label='baseline')
+    plt.plot(testPredict, linewidth=1, label='test predictions')
     plt.legend()
     plt.show()
