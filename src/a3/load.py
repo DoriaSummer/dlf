@@ -22,15 +22,15 @@ def preprocessing(dataset):
 
 
 def separate_data(dataset):
-    train_size = int(len(dataset) * 0.67)
+    train_size = int(len(dataset) * 0.7)
     train, valid = dataset[0:train_size, :], dataset[train_size:len(dataset), :]
     return train, valid
 
 
-def create_dataset(dataset, look_back=1):
+def create_dataset(dataset, time_step=1):
     dataX, dataY = [], []
-    for i in range(len(dataset) - look_back - 1):
-        a = dataset[i:(i + look_back), :5]
+    for i in range(len(dataset) - time_step - 1):
+        a = dataset[i:(i + time_step), :5]
         dataX.append(a)
-        dataY.append(dataset[i + look_back, 0])
+        dataY.append(dataset[i + time_step, 0])
     return numpy.array(dataX), numpy.array(dataY)
